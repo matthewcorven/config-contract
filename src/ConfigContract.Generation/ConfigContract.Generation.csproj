@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ConfigContract.Generation</AssemblyName>
+    <RootNamespace>ConfigContract.Generation</RootNamespace>
+    <PackageId>ConfigContract.Generation</PackageId>
+    <Description>Future code-generation contracts for ConfigContract.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ConfigContract.Abstractions/ConfigContract.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ConfigContract.Analyzers</AssemblyName>
+    <RootNamespace>ConfigContract.Analyzers</RootNamespace>
+    <PackageId>ConfigContract.Analyzers</PackageId>
+    <Description>Analyzer identifiers and future diagnostics for ConfigContract.</Description>
+  </PropertyGroup>
+</Project>

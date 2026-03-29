@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ConfigContract</AssemblyName>
+    <RootNamespace>ConfigContract</RootNamespace>
+    <PackageId>ConfigContract</PackageId>
+    <Description>Core registry and runtime types for ConfigContract.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ConfigContract.Abstractions/ConfigContract.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

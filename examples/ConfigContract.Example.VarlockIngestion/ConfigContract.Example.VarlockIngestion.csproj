@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>ConfigContract.Example.VarlockIngestion</AssemblyName>
+    <RootNamespace>ConfigContract.Example.VarlockIngestion</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/ConfigContract/ConfigContract.csproj" />
+    <ProjectReference Include="../../src/ConfigContract.Abstractions/ConfigContract.Abstractions.csproj" />
+    <ProjectReference Include="../../src/ConfigContract.VarlockSpec/ConfigContract.VarlockSpec.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Samples\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

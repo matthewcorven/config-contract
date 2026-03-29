@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+
+# Editors and IDEs
+.idea/
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json
+*.suo
+*.user
+*.userosscache
+*.rsuser
+*.sln.docstates
+_ReSharper*/
+*.DotSettings.user
+
+# .NET build outputs
+[Bb]in/
+[Oo]bj/
+artifacts/
+out/
+TestResults/
+BenchmarkDotNet.Artifacts/
+
+# Coverage and logs
+coverage/
+coverage.*
+*.coverage
+*.coveragexml
+*.log
+
+# Packaging outputs
+*.nupkg
+*.snupkg
+
+# Local config and secrets
+# Keep checked-in schema and fixture files tracked; ignore only local value overlays.
+.env
+.env.local
+.env.*.local
+appsettings.Development.local.json
+secrets.json
+*.secrets.json

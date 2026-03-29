@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ConfigContract.Hosting</AssemblyName>
+    <RootNamespace>ConfigContract.Hosting</RootNamespace>
+    <PackageId>ConfigContract.Hosting</PackageId>
+    <Description>Hosting integration points for ConfigContract.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ConfigContract/ConfigContract.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+</Project>

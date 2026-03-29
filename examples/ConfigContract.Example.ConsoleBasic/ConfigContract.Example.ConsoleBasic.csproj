@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>ConfigContract.Example.ConsoleBasic</AssemblyName>
+    <RootNamespace>ConfigContract.Example.ConsoleBasic</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/ConfigContract/ConfigContract.csproj" />
+    <ProjectReference Include="../../src/ConfigContract.Abstractions/ConfigContract.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>ConfigContract.Example.HostingBasic</AssemblyName>
+    <RootNamespace>ConfigContract.Example.HostingBasic</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/ConfigContract/ConfigContract.csproj" />
+    <ProjectReference Include="../../src/ConfigContract.Abstractions/ConfigContract.Abstractions.csproj" />
+    <ProjectReference Include="../../src/ConfigContract.Hosting/ConfigContract.Hosting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+</Project>

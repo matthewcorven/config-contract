@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ConfigContract.Abstractions</AssemblyName>
+    <RootNamespace>ConfigContract.Abstractions</RootNamespace>
+    <PackageId>ConfigContract.Abstractions</PackageId>
+    <Description>Core abstractions shared across ConfigContract packages.</Description>
+  </PropertyGroup>
+</Project>

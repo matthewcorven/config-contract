@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ConfigContract.VarlockSpec</AssemblyName>
+    <RootNamespace>ConfigContract.VarlockSpec</RootNamespace>
+    <PackageId>ConfigContract.VarlockSpec</PackageId>
+    <Description>Varlock specification integration types for ConfigContract.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ConfigContract.Abstractions/ConfigContract.Abstractions.csproj" />
+  </ItemGroup>
+</Project>
