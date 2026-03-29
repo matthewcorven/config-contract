@@ -1,0 +1,39 @@
+{
+  "agents": {
+    "lead": {
+      "persistent_name": "Ripley",
+      "universe": "Alien",
+      "created_at": "2026-03-30T15:48:06Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "core-dev": {
+      "persistent_name": "Parker",
+      "universe": "Alien",
+      "created_at": "2026-03-30T15:48:06Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "compatibility-dev": {
+      "persistent_name": "Dallas",
+      "universe": "Alien",
+      "created_at": "2026-03-30T15:48:06Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "tester": {
+      "persistent_name": "Lambert",
+      "universe": "Alien",
+      "created_at": "2026-03-30T15:48:06Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "docs": {
+      "persistent_name": "Brett",
+      "universe": "Alien",
+      "created_at": "2026-03-30T15:48:06Z",
+      "legacy_named": false,
+      "status": "active"
+    }
+  }
+}
