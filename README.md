@@ -4,6 +4,20 @@ ConfigContract is a .NET-first repository for configuration contract work: defin
 
 This repo starts intentionally narrow. The first job is to prove a small, credible core in its own repository before expanding scope or public claims. The repo already has a minimal .NET 10 solution and test scaffold; implementation follows the staged plan in [docs/roadmap.md](docs/roadmap.md).
 
+## Why ConfigContract
+
+ConfigContract exists for teams that want configuration to behave more like a declared contract than a loose collection of keys, bind calls, and startup checks.
+
+The intended value is straightforward:
+
+- Make required values, defaults, value kinds, and sensitivity intent explicit in one contract model.
+- Catch configuration-shape problems before they disappear into object binding or host startup behavior.
+- Preserve diagnostics as first-class output instead of relying only on scattered runtime exceptions or app-specific validation code.
+- Fit into normal .NET configuration, options, DI, and hosting flows rather than replacing them with a foreign runtime model.
+- Provide a bounded migration path from Varlock-style specs without making compatibility baggage the center of the product.
+
+The implemented baseline is intentionally smaller than that full value proposition. The sections below separate current proof from longer-term product direction.
+
 ## What It Is
 
 - A home for a .NET-native contract model and diagnostics surface.
@@ -17,6 +31,22 @@ This repo starts intentionally narrow. The first job is to prove a small, credib
 - Not a replacement for `Microsoft.Extensions.Configuration` or the built-in options-validation stack.
 - Not a claim that the full Varlock engine, plugin system, or CLI behavior is being reimplemented here on day one.
 - Not the canonical place for broad cross-language features; the first milestones are .NET-first and proof-driven.
+
+## When To Reach For It
+
+ConfigContract is worth using when:
+
+- You want a pre-binding contract layer for configuration shape, required versus optional behavior, defaults, or sensitivity metadata.
+- You want diagnostics that can travel cleanly through local development, CI, and application startup instead of only post-bind object validation failures.
+- You want a .NET-native contract story that fits standard SDK, NuGet, configuration, and hosting workflows.
+- You want a bounded migration path from Varlock-style specs into a .NET-owned model.
+
+Built-in .NET validation is often enough when:
+
+- `IConfiguration` binding plus `IOptions<T>`, `ValidateOnStart()`, or `IValidateOptions<T>` already covers the problem.
+- You only need post-binding object validation and do not need a separate contract model.
+- You do not need sensitivity metadata, import compatibility, or pre-binding diagnostics as a product concern.
+- A small amount of application-specific validation code is clearer than introducing a distinct contract layer.
 
 ## Current Status
 
