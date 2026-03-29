@@ -20,7 +20,14 @@ This repo starts intentionally narrow. The first job is to prove a small, credib
 
 ## Current Status
 
-The repo is brand new, but it is not empty. It already contains a buildable .NET 10 solution, central package management, and a baseline test project. The next step is to fill that scaffold with proven behavior while keeping support claims narrow.
+The repo is still intentionally narrow, but it has moved past pure scaffold status. The current baseline now includes a real core validation path, a bounded Varlock-spec import lane, and automated proofs that exercise those behaviors.
+
+Current, proven baseline:
+
+- The core `ConfigContract` path now includes contract validation and diagnostics in the main library, rather than only placeholder project structure.
+- `ContractRegistry` can collect descriptors and aggregate validation results across the registered contracts.
+- `ConfigContract.VarlockSpec` can import a documented first-wave subset of Varlock-style schema input and report explicit diagnostics for unsupported or malformed cases instead of silently approximating them.
+- Tests and runnable examples now prove behavior in the repo, rather than only proving that the solution scaffold exists.
 
 ## Repo Layout
 
@@ -38,7 +45,7 @@ Current layout:
 | `src/ConfigContract.VarlockSpec/` | Varlock-spec ingestion boundary |
 | `src/ConfigContract.Generation/` | Generation-related code |
 | `src/ConfigContract.Analyzers/` | Analyzer or diagnostic tooling |
-| `tests/ConfigContract.Tests/` | Baseline automated tests |
+| `tests/ConfigContract.Tests/` | Automated proof tests for core validation and Varlock import behavior |
 | `examples/` | Narrow, product-owned example set for the new repo |
 | `README.md` | Repo overview and working boundaries |
 | `AGENTS.md` | Concise development conventions for humans and coding agents |
@@ -49,7 +56,7 @@ Current layout:
 
 ## Build And Test
 
-The current scaffold already builds and tests through the root solution. The default inner loop is:
+The current baseline builds and tests through the root solution. The default inner loop is:
 
 ```bash
 dotnet restore ConfigContract.sln
@@ -63,6 +70,12 @@ Guidance for early work:
 - Keep Node or Bun off the critical path unless the task is specifically about Varlock compatibility fixtures or ingestion comparison.
 - Treat every public claim as incomplete until it has a named automated proof.
 
+The current proofs stay intentionally small and specific:
+
+- `tests/ConfigContract.Tests/ContractRegistryTests.cs` proves descriptor storage and duplicate-field validation through the registry path.
+- `tests/ConfigContract.Tests/VarlockSpecImporterTests.cs` proves both a supported import fixture and an explicit unsupported root-decorator failure.
+- The examples under `examples/` are runnable seeds for the direct registry path, the hosting path, and the bounded Varlock import path.
+
 The initial example set is intentionally small. See [examples/README.md](examples/README.md) for the current seeds and [docs/example-migration-plan.md](docs/example-migration-plan.md) for the migration policy from the broader Varlock example matrix.
 
 ## Relationship To Varlock Spec Ingestion
@@ -72,6 +85,8 @@ ConfigContract is not a fork of Varlock. Varlock remains the existing engine and
 This repo exists to answer a narrower question: can a .NET-first contract model consume Varlock-style schema input in a way that is explicit, testable, and useful inside normal .NET configuration flows?
 
 The dedicated `src/ConfigContract.VarlockSpec/` project is the intended compatibility boundary for that work. It should stay separate from the core contract model so the core can be reasoned about and tested without taking parser or runtime dependencies.
+
+Today that compatibility lane is intentionally bounded. It accepts the small line-based subset exercised by the included fixtures and examples, and it emits explicit diagnostics when a construct falls outside the current lane.
 
 That has a few immediate consequences:
 

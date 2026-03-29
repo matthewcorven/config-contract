@@ -8,9 +8,11 @@ The examples here are intentionally narrow. They exist to prove the early identi
 
 | Example | Purpose |
 | --- | --- |
-| `ConfigContract.Example.ConsoleBasic` | Smallest direct-inspection and registry usage path |
-| `ConfigContract.Example.HostingBasic` | Minimal DI and hosting integration path |
-| `ConfigContract.Example.VarlockIngestion` | Bounded compatibility lane for Varlock-spec ingestion |
+| `ConfigContract.Example.ConsoleBasic` | Manually constructs descriptors, adds them to a registry, runs validation, and prints the resulting contract summary |
+| `ConfigContract.Example.HostingBasic` | Registers ConfigContract through `Microsoft.Extensions.DependencyInjection`, resolves `ContractRegistry`, and validates a host-owned contract |
+| `ConfigContract.Example.VarlockIngestion` | Imports a supported Varlock schema sample, adds the imported descriptor to the registry, and shows the import-diagnostics count alongside contract validation |
+
+These are real seeds now, not placeholder project shells. Each example exercises a concrete baseline path that the repo currently owns: direct registry validation, basic hosting registration, or bounded Varlock-spec ingestion.
 
 ## Why The Set Is Small
 
