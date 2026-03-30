@@ -2,126 +2,96 @@
 
 ## Purpose
 
-This roadmap keeps the first public claims narrow. ConfigContract should earn scope in stages, with each stage ending in runnable proof rather than prose alone.
+This roadmap sequences the approved MVP without widening the public promise. The MVP definition and exit criteria live in [docs/mvp-product-requirements.md](mvp-product-requirements.md); this document describes how work should be staged around that target.
 
 ## Current Baseline
 
-The repo already has the basic scaffold in place:
+The repo is already past pure scaffold status. Today it includes:
 
-- `ConfigContract.sln`
-- `.NET 10` pinned through `global.json`
-- Shared build defaults and central package management
-- Project placeholders under `src/`
-- A baseline test project under `tests/`
+- a core contract model and validation path
+- registry aggregation for contract validation results
+- basic hosting integration through `ConfigContract.Hosting`
+- a bounded Varlock-spec importer with explicit diagnostics for unsupported or malformed input
+- automated tests and small runnable examples for the direct, hosting, and migration lanes
 
-That means the roadmap starts after bootstrap. The remaining work is to turn the scaffold into a credible product surface.
+That means the roadmap is about tightening and proving the MVP, not inventing a broader first release.
 
 ## Working Assumptions
 
-- The repo is .NET-first.
-- Varlock spec ingestion matters, but it starts as compatibility work, not a parity promise.
-- Pre-binding contract validation is the focus; post-binding application invariants still belong to normal .NET validation.
-- Public claims should follow proven behavior, not lead it.
+- The repo is .NET-first, and the default developer loop remains `dotnet restore`, `dotnet build`, and `dotnet test` against `ConfigContract.sln`.
+- The MVP prioritizes developer experience and CI runtime over feature breadth.
+- Varlock spec ingestion is a bounded migration lane, not a parity program.
+- Public wording follows automated proof.
+- Broader tooling or compatibility expansion must wait until the MVP surface is proven.
+
+## Required PR Lane
+
+The MVP needs one fast required pull request lane.
+
+That lane should:
+
+- cover restore, build, and fast deterministic proofs for the MVP surface
+- protect the direct validation path, the default hosting path, and the bounded Varlock migration lane
+- stay small enough that routine pull requests are not blocked by broad fixture matrices or slow environment setup
+
+Heavier lanes are intentionally deferred from required pull request gating during MVP. Larger compatibility sweeps, performance checks, broader example matrices, and similar work can exist as non-required or post-MVP lanes once the narrow surface is stable.
 
 ## Example Strategy
 
-ConfigContract should not start by copying the full `.NET` example matrix from the Varlock repo. The early examples in this repository should prove ConfigContract's own identity:
+The examples in this repository should continue to prove only the product surface the repo owns today:
 
-- a minimal direct-inspection or registry example
-- a hosting baseline that shows ordinary .NET registration and consumption
-- a bounded compatibility example for Varlock spec ingestion
+- a minimal direct validation example
+- a minimal hosting example
+- a bounded Varlock migration example
 
-Broader host, reload, cloud, and security examples should be rewritten into this repo only after the corresponding product surfaces exist here. The detailed carry-over policy lives in [docs/example-migration-plan.md](example-migration-plan.md).
+Broader host, reload, cloud, and security examples stay out of the MVP until the corresponding product surface exists and has proof in this repository. The carry-over policy remains in [docs/example-migration-plan.md](example-migration-plan.md).
 
-## Stage 1: Core Contract Model
+## Stage 1: Stabilize The Narrow Core
 
-Goal: define the in-memory model before choosing how much of Varlock to ingest.
-
-Deliverables:
-
-- Core types for keys, value kinds, defaults, required or optional state, sensitivity or public visibility, and diagnostics.
-- Normalization and diagnostic behavior with parser-independent tests.
-- Explicit model boundaries for what belongs in the core versus adapters.
-
-Exit criteria:
-
-- The contract model can represent the first planned scenarios without parser code.
-- Diagnostics are stable enough to assert in tests.
-- No dependency on the Varlock CLI or repo is required for core unit tests.
-
-## Stage 2: Bounded Varlock Spec Ingestion
-
-Goal: accept a documented subset of Varlock `@env-spec` as an input path.
+Goal: finish the smallest credible product surface promised in the MVP PRD.
 
 Deliverables:
 
-- Ingestion adapter for a bounded, written-down subset.
-- Imported fixtures or mirrored proof cases from Varlock.
-- Explicit diagnostics for unsupported or deferred constructs.
-- Parity notes that say which features are in, out, or partial.
+- stable contract-model and diagnostic behavior for the default .NET path
+- registry validation behavior with explicit, testable diagnostics
+- basic hosting integration that proves ConfigContract fits ordinary .NET registration and consumption flows
+- a documented bounded Varlock subset with explicit unsupported-case reporting
+- README, roadmap, and example positioning aligned to the same narrow promise
 
 Exit criteria:
 
-- Supported ingestion cases pass against imported fixtures.
-- Unsupported cases fail explicitly and predictably.
-- The repo can state exactly what "Varlock-compatible" means at this stage.
+- each public MVP claim is backed by an automated proof in this repository
+- the runnable examples stay small and .NET-only
+- unsupported or deferred Varlock constructs fail explicitly instead of being approximated
+- the default developer path does not require a JavaScript toolchain
 
-## Stage 3: .NET Integration Surface
+## Stage 2: Lock The Fast Developer Loop
 
-Goal: flow validated contract data into ordinary .NET configuration consumption.
+Goal: make the narrow MVP cheap to work on and cheap to protect in pull requests.
 
 Deliverables:
 
-- Adapter into `IConfiguration` and options-friendly surfaces.
-- Proof apps or targeted integration tests for the default path.
-- Clear error reporting around contract or ingestion failures.
-- Documentation that separates pre-binding contract validation from post-binding app validation.
+- one fast required pull request lane that covers the MVP surface
+- heavier compatibility or broader-scenario lanes split out of the required path
+- CI and local developer guidance that favor the default .NET loop over additional tooling
 
 Exit criteria:
 
-- A small .NET app can consume the contract through a standard configuration path.
-- Failure modes are asserted in automated tests.
-- The documented happy path is fully runnable from this repo.
+- the required lane stays focused on the MVP surface rather than future backlog items
+- heavier lanes can run without turning every pull request into a broad product-validation sweep
+- developer documentation describes the fast path first
 
-## Stage 4: Generation And Analyzer Surface
+## Deferred Beyond MVP
 
-Goal: add generation and analyzer work only after the contract and hosting path are stable.
+These items are explicitly outside the MVP and should not be described as near-term commitments in public docs:
 
-Deliverables:
-
-- Clear generation scope for emitted types or helper artifacts.
-- Analyzer rules that reinforce supported usage without inventing unsupported behavior.
-- Tests that pin both happy-path output and failure diagnostics.
-
-Exit criteria:
-
-- Generated output is deterministic enough to snapshot or text-assert.
-- Analyzer messages are explicit, actionable, and covered by tests.
-- The repo can explain why generation or analyzer features belong here instead of in Varlock proper.
-
-## Stage 5: Packaging And Distribution
-
-Goal: make the repo consumable outside local development.
-
-Deliverables:
-
-- NuGet packaging plan and versioning approach.
-- Minimal external-consumer proof.
-- Release notes template and support statement.
-- Docs that explain when to use ConfigContract versus Varlock directly.
-
-Exit criteria:
-
-- A clean consumer outside the repo can restore, build, and run against the published package layout.
-- Packaging and support claims are backed by automation, not manual inspection.
-
-## Not In The First Milestones
-
-- Full Varlock engine parity.
-- Broad plugin or secret-provider support.
-- Non-.NET-first runtime targets.
-- Multiple host integrations before the default configuration path is proven.
+- analyzers
+- source generation
+- a first-party CLI
+- full Varlock parity or broad compatibility claims
+- broad host, reload, cloud, or security example matrices
+- packaging or distribution promises beyond what the narrow MVP proves
 
 ## Review Rhythm
 
-Revisit this roadmap whenever a milestone changes shape. If scope grows, add proof obligations before adding broader claims.
+Revisit this roadmap when the MVP exit criteria change or when the repo has proof that a deferred lane deserves promotion into the default path.

@@ -16,3 +16,5 @@
 ## Learnings
 
 - Initial configured team setup completed on 2026-03-30T15:48:06Z.
+- 2026-03-30: The MVP proof plan should require one fast PR gate first and keep heavier validation lanes deferred until later milestones.
+- 2026-03-30: A single DI-resolved `ContractRegistry` proof can close a hosting docs mismatch without widening the supported hosting surface.

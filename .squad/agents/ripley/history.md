@@ -16,3 +16,5 @@
 ## Learnings
 
 - Initial configured team setup completed on 2026-03-30T15:48:06Z.
+- 2026-03-30: MVP scoping stays narrow around .NET-first pre-binding validation, and the proposal needs approval before any product-doc drafting starts.
+- 2026-03-30: Reject doc wording that outruns automated proof even when scope is otherwise approved; require either narrower language or a focused proof.

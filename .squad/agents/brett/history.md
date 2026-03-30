@@ -16,3 +16,5 @@
 ## Learnings
 
 - Initial configured team setup completed on 2026-03-30T15:48:06Z.
+- 2026-03-30: PRD framing should emphasize narrow .NET-first value, developer experience, and CI runtime, and stop short of product-doc writing before proposal approval.
+- 2026-03-30: Once `docs/mvp-product-requirements.md` is approved, treat it as the near-term source of truth and keep README and roadmap wording inside the proved MVP and CI and DX constraints.

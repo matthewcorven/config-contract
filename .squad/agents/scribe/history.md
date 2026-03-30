@@ -15,3 +15,5 @@
 ## Learnings
 
 - Initial configured team setup completed on 2026-03-30T15:48:06Z.
+- 2026-03-30: When planning narrows MVP scope or CI gates, record the consensus in `.squad/decisions.md`, log the session, and propagate short learnings to the affected agent histories before docs are drafted.
+- 2026-03-30: When a docs review blocker is only a proof mismatch, merge the final proof rule into `.squad/decisions.md` and keep the transient rejection out of the active decision log.

@@ -1,8 +1,8 @@
 # ConfigContract
 
-ConfigContract is a .NET-first repository for configuration contract work: define the contract for configuration values before binding, validate it, preserve diagnostics and sensitivity metadata, and feed the result into ordinary .NET configuration and options flows.
+ConfigContract is a .NET-first repository for configuration contract work: define the contract for configuration values before binding, validate it, preserve diagnostics and sensitivity metadata, and expose the result through the repo's current registry and basic hosting seams.
 
-This repo starts intentionally narrow. The first job is to prove a small, credible core in its own repository before expanding scope or public claims. The repo already has a minimal .NET 10 solution and test scaffold; implementation follows the staged plan in [docs/roadmap.md](docs/roadmap.md).
+This repo starts intentionally narrow. The approved near-term scope is the MVP described in [docs/mvp-product-requirements.md](docs/mvp-product-requirements.md): prove a small .NET-first core, basic hosting integration, and a bounded Varlock migration lane without broadening public claims. The staged sequencing for that work lives in [docs/roadmap.md](docs/roadmap.md).
 
 ## Why ConfigContract
 
@@ -13,10 +13,26 @@ The intended value is straightforward:
 - Make required values, defaults, value kinds, and sensitivity intent explicit in one contract model.
 - Catch configuration-shape problems before they disappear into object binding or host startup behavior.
 - Preserve diagnostics as first-class output instead of relying only on scattered runtime exceptions or app-specific validation code.
-- Fit into normal .NET configuration, options, DI, and hosting flows rather than replacing them with a foreign runtime model.
+- Fit into normal .NET application setup through dependency-light APIs and a basic hosting seam rather than replacing the stack with a foreign runtime model.
 - Provide a bounded migration path from Varlock-style specs without making compatibility baggage the center of the product.
 
 The implemented baseline is intentionally smaller than that full value proposition. The sections below separate current proof from longer-term product direction.
+
+## Approved MVP
+
+The near-term promise is smaller than the full product direction described in [docs/proposals/0001-config-contract-product-direction.md](docs/proposals/0001-config-contract-product-direction.md). For MVP, ConfigContract is committing to:
+
+- a .NET-first contract model with pre-binding validation and explicit diagnostics
+- basic DI and hosting integration for the default .NET path
+- a bounded Varlock import lane as migration input, with explicit unsupported-case diagnostics
+- small runnable examples and automated proofs for that surface
+- one fast required pull request lane, with heavier validation lanes deferred
+
+The .NET-only inner loop is the governing contributor and CI path for that MVP surface.
+
+The approved MVP scope and exit criteria live in [docs/mvp-product-requirements.md](docs/mvp-product-requirements.md).
+
+The MVP is not promising analyzers, source generation, a CLI, or full Varlock parity.
 
 ## What It Is
 
@@ -38,7 +54,7 @@ ConfigContract is worth using when:
 
 - You want a pre-binding contract layer for configuration shape, required versus optional behavior, defaults, or sensitivity metadata.
 - You want diagnostics that can travel cleanly through local development, CI, and application startup instead of only post-bind object validation failures.
-- You want a .NET-native contract story that fits standard SDK, NuGet, configuration, and hosting workflows.
+- You want a .NET-native contract story that fits standard SDK, NuGet, DI, and hosting workflows without bringing in a second runtime.
 - You want a bounded migration path from Varlock-style specs into a .NET-owned model.
 
 Built-in .NET validation is often enough when:
@@ -69,12 +85,12 @@ Current layout:
 | `global.json` | Pinned .NET SDK baseline |
 | `Directory.Build.props` | Shared build defaults |
 | `Directory.Packages.props` | Central package versions |
-| `src/ConfigContract.Abstractions/` | Core shared types and interfaces |
+| `src/ConfigContract.Abstractions/` | Core shared contract and diagnostic types |
 | `src/ConfigContract/` | Main contract library |
-| `src/ConfigContract.Hosting/` | Host and configuration integration surface |
+| `src/ConfigContract.Hosting/` | Basic DI and hosting integration surface |
 | `src/ConfigContract.VarlockSpec/` | Varlock-spec ingestion boundary |
-| `src/ConfigContract.Generation/` | Generation-related code |
-| `src/ConfigContract.Analyzers/` | Analyzer or diagnostic tooling |
+| `src/ConfigContract.Generation/` | Reserved seam for deferred generation work |
+| `src/ConfigContract.Analyzers/` | Reserved seam for deferred analyzer work |
 | `tests/ConfigContract.Tests/` | Automated proof tests for core validation and Varlock import behavior |
 | `examples/` | Narrow, product-owned example set for the new repo |
 | `README.md` | Repo overview and working boundaries |
@@ -86,7 +102,7 @@ Current layout:
 
 ## Build And Test
 
-The current baseline builds and tests through the root solution. The default inner loop is:
+The current baseline builds and tests through the root solution. The default inner loop is the governing path for contributors and the required pull request lane:
 
 ```bash
 dotnet restore ConfigContract.sln
@@ -96,7 +112,7 @@ dotnet test ConfigContract.sln
 
 Guidance for early work:
 
-- Prefer the `dotnet` CLI as the default inner loop.
+- Prefer the `dotnet` CLI as the default inner loop and required CI path.
 - Keep Node or Bun off the critical path unless the task is specifically about Varlock compatibility fixtures or ingestion comparison.
 - Treat every public claim as incomplete until it has a named automated proof.
 
@@ -127,10 +143,9 @@ That has a few immediate consequences:
 
 ## Near-Term Priorities
 
-See [docs/roadmap.md](docs/roadmap.md) for the staged plan. The first milestones are:
+See [docs/mvp-product-requirements.md](docs/mvp-product-requirements.md) for the approved promise and exit criteria, and [docs/roadmap.md](docs/roadmap.md) for sequencing. The immediate priorities are:
 
-1. Define the core contract model and diagnostics surface without taking parser dependencies.
-2. Add a bounded Varlock ingestion lane with explicit parity fixtures and unsupported-case reporting.
-3. Prove the hosting and configuration path into normal .NET configuration and options usage.
-4. Add generation, analyzer, and packaging work only after the core path is proven.
-5. Grow the example set by rewriting the highest-value scenarios, not by bulk-copying the bridge-era project matrix.
+1. Prove the MVP path end to end: contract model, diagnostics, registry validation, and the default hosting path.
+2. Keep Varlock spec ingestion bounded to the documented migration subset, with explicit unsupported-case diagnostics.
+3. Protect developer experience with one fast required pull request lane; keep larger parity sweeps, performance work, and broader scenario matrices out of the required path for now.
+4. Expand tooling, packaging, and example breadth only after the MVP promise is proven and explicitly re-scoped.

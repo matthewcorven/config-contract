@@ -1,4 +1,6 @@
+using ConfigContract.Hosting;
 using ConfigContract.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ConfigContract.Tests;
 
@@ -28,6 +30,28 @@ public sealed class ContractRegistryTests
         new ContractField("APP_NAME", ContractValueKind.String),
         new ContractField("APP_NAME", ContractValueKind.String),
       }));
+
+    var result = registry.Validate();
+
+    Assert.False(result.IsValid);
+    var diagnostic = Assert.Single(result.Diagnostics);
+    Assert.Equal("CC0003", diagnostic.Code);
+  }
+
+  [Fact]
+  public void AddConfigContractRegistersContractRegistryAndResolvedServiceValidatesContracts()
+  {
+    var services = new ServiceCollection();
+    services.AddConfigContract();
+
+    using var serviceProvider = services.BuildServiceProvider();
+    var registry = serviceProvider.GetRequiredService<ContractRegistry>();
+
+    registry.Add(new ContractDescriptor("App", new[]
+    {
+      new ContractField("APP_NAME", ContractValueKind.String),
+      new ContractField("APP_NAME", ContractValueKind.String),
+    }));
 
     var result = registry.Validate();
 

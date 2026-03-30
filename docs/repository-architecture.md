@@ -1,271 +1,132 @@
 # ConfigContract Repository Architecture
 
-This repository is the dedicated home for ConfigContract, a .NET-first product line for contract-defined application configuration.
+This repository currently supports a narrow .NET-first MVP: pre-binding configuration contract validation, registry behavior, basic DI and hosting registration, and bounded Varlock-spec ingestion. It should not be read as the architecture of a broad first-release product line.
 
-The repository does not exist to wrap a JavaScript runtime. It exists to build and ship a native .NET product with its own core model, runtime, tooling, examples, and compatibility boundaries.
+## Governing Constraints
 
-## Architectural Principles
+### 1. Public scope follows proof
 
-### 1. .NET is the product center
+README, proposal, architecture, examples, and package descriptions should claim only the behavior that the repository proves today.
 
-The default developer path must work with the .NET SDK, NuGet, standard MSBuild flows, and normal .NET application patterns. Core development, testing, packaging, and production use must not depend on Node.js or any JavaScript runtime.
+### 2. The default .NET loop and fast required pull request lane govern design
 
-### 2. The contract model is the stable center
+The default developer path and the required CI path are:
 
-Everything in the repository should converge on one canonical ConfigContract model.
+```bash
+dotnet restore ConfigContract.sln
+dotnet build ConfigContract.sln
+dotnet test ConfigContract.sln
+```
 
-- authoring packages produce the model
-- compatibility packages translate into the model
-- runtime packages evaluate the model
-- tooling packages inspect, validate, or project the model
+Routine development must stay on that path. Broader compatibility tooling, heavier fixture sweeps, or non-.NET prerequisites stay off the required lane unless a new decision explicitly promotes them.
 
-This keeps compatibility work from leaking into the runtime architecture.
+### 3. The contract model stays dependency-light
 
-### 3. Compatibility is an adapter boundary
+The abstractions and the core validation path should remain easy to understand without adapter code, generation code, or external runtime dependencies.
 
-Varlock ingestion is useful for migration, but it is not a core architectural dependency. Compatibility code must stay isolated so the product can evolve on .NET terms.
+### 4. Compatibility stays at the edge
 
-### 4. Package boundaries reflect real .NET surfaces
+Varlock ingestion is a migration input, not the architectural center. Unsupported or lossy cases must be reported explicitly.
 
-Packages should be organized around real consumer seams: model, authoring, runtime, configuration integration, hosting integration, source generation, analyzers, CLI, and compatibility.
+### 5. Deferred tooling stays deferred
 
-### 5. Diagnostics are a first-class feature
+Reserved or placeholder projects are not product commitments. Until a deferred feature has proof and approval, the architecture should describe it as deferred.
 
-If a contract is invalid, an input format is only partially supported, or a compatibility import is lossy, the product should say so explicitly. Silent parity assumptions are not acceptable.
+## Current Repository Shape
 
-## Repository Shape
+The repository is a small multi-project .NET repo with shared solution and build settings at the root.
 
-This repository should be a dedicated .NET monorepo.
-
-The expected top-level layout is:
+Current top-level shape:
 
 ```text
 docs/
   proposals/
 src/
-  ConfigContract.Model/
-  ConfigContract.Authoring/
-  ConfigContract.Runtime/
-  ConfigContract.Configuration/
+  ConfigContract.Abstractions/
+  ConfigContract/
   ConfigContract.Hosting/
-  ConfigContract.SourceGeneration/
+  ConfigContract.VarlockSpec/
+  ConfigContract.Generation/
   ConfigContract.Analyzers/
-  ConfigContract.Cli/
-  ConfigContract.VarlockCompat/
 tests/
-  ConfigContract.Model.Tests/
-  ConfigContract.Authoring.Tests/
-  ConfigContract.Runtime.Tests/
-  ConfigContract.IntegrationTests/
-  ConfigContract.CompatibilityTests/
+  ConfigContract.Tests/
 examples/
-  console/
-  aspnetcore/
-  worker/
-eng/
-  scripts/
-  packaging/
+  ConfigContract.Example.ConsoleBasic/
+  ConfigContract.Example.HostingBasic/
+  ConfigContract.Example.VarlockIngestion/
 ```
 
-The repository should also carry a solution file, central package management, shared build settings, and CI definitions at the root.
+The root solution, shared build props, and central package management exist to keep that narrow surface easy to build and validate as one unit.
 
-## Package Responsibilities
+## Current Package Responsibilities
 
-### `ConfigContract.Model`
+### `ConfigContract.Abstractions`
 
-Defines the product's canonical contract model.
+Defines the core contract and diagnostic primitives: descriptors, fields, diagnostics, source locations, validation results, and value kinds.
 
-Responsibilities:
+This is the dependency-light center of the repo.
 
-- contract nodes and metadata
-- diagnostics primitives and result types
-- sensitivity and policy metadata
-- common value abstractions used across the stack
+### `ConfigContract`
 
-This package should stay small, stable, and dependency-light.
+Owns the core validator and registry behavior.
 
-### `ConfigContract.Authoring`
-
-Owns first-party contract authoring formats and translation into the canonical model.
-
-Responsibilities:
-
-- parsing first-party contract definitions
-- authoring-time validation
-- serialization and normalization
-- authoring diagnostics
-
-The first-party authoring format is a ConfigContract concern. It must not be defined by imported Varlock behavior.
-
-### `ConfigContract.Runtime`
-
-Executes the contract model for application use.
-
-Responsibilities:
-
-- resolving values and overlays
-- applying validation rules at runtime
-- preserving sensitivity and metadata semantics
-- loading compiled or serialized contract artifacts
-
-This is the runtime heart of the product.
-
-### `ConfigContract.Configuration`
-
-Integrates the runtime with `Microsoft.Extensions.Configuration`.
-
-Responsibilities:
-
-- configuration provider implementation
-- binding helpers and projections
-- clear error handling for startup and reload paths
+Today this is the main pre-binding validation path the MVP proves.
 
 ### `ConfigContract.Hosting`
 
-Adds ergonomic hosting and DI integration.
+Adds the basic DI and hosting seam.
 
-Responsibilities:
+Today that means registering `ContractRegistry` through the normal `IServiceCollection` path. It is not yet a broader configuration provider or options-integration layer.
 
-- `HostApplicationBuilder` extensions
-- `WebApplicationBuilder` extensions
-- DI registration for runtime services and metadata access
+### `ConfigContract.VarlockSpec`
 
-### `ConfigContract.SourceGeneration`
+Owns the bounded Varlock-spec import lane.
 
-Provides typed access patterns that feel native in .NET.
+Its job is to translate supported inputs into the ConfigContract model and emit explicit diagnostics for unsupported or malformed constructs.
 
-Responsibilities:
+### `ConfigContract.Generation`
 
-- strongly typed accessors and options projections
-- generated metadata helpers
-- compile-time feedback integration with analyzers where appropriate
+Reserved seam for future generation-related work.
+
+The project exists, but no supported generation feature is part of the approved MVP.
 
 ### `ConfigContract.Analyzers`
 
-Provides Roslyn diagnostics and code fixes.
+Reserved seam for future analyzer work.
 
-Responsibilities:
-
-- detect invalid or risky consumption patterns
-- validate authoring references visible at compile time
-- improve developer feedback inside the IDE and build
-
-### `ConfigContract.Cli`
-
-Provides command-line workflows distributed as a `dotnet tool`.
-
-Responsibilities:
-
-- validate contracts
-- inspect normalized models
-- export artifacts
-- run migration and compatibility checks
-
-The CLI should be a first-party .NET tool, not a wrapper over an external JavaScript executable.
-
-### `ConfigContract.VarlockCompat`
-
-Provides Varlock spec ingestion as a bounded compatibility lane.
-
-Responsibilities:
-
-- parse or import supported Varlock inputs
-- translate them into the ConfigContract model
-- emit explicit diagnostics for unsupported, ambiguous, or lossy semantics
-- maintain dedicated compatibility fixtures and tests
-
-This package is important, but it is not upstream of the product center.
+The project exists, but no analyzer feature is part of the approved MVP.
 
 ## Dependency Direction
 
-The dependency graph should remain disciplined.
+The current dependency direction is intentionally simple:
 
-```mermaid
-flowchart TD
-  Model[ConfigContract.Model]
-  Authoring[ConfigContract.Authoring]
-  Compat[ConfigContract.VarlockCompat]
-  Runtime[ConfigContract.Runtime]
-  Configuration[ConfigContract.Configuration]
-  Hosting[ConfigContract.Hosting]
-  SourceGen[ConfigContract.SourceGeneration]
-  Analyzers[ConfigContract.Analyzers]
-  Cli[ConfigContract.Cli]
+- `ConfigContract` depends on `ConfigContract.Abstractions`.
+- `ConfigContract.Hosting` depends on `ConfigContract`.
+- `ConfigContract.VarlockSpec` depends on `ConfigContract.Abstractions`.
+- `ConfigContract.Generation` currently depends on `ConfigContract.Abstractions`, but remains deferred.
+- `ConfigContract.Analyzers` currently stands alone as a reserved tooling seam.
 
-  Model --> Authoring
-  Model --> Compat
-  Model --> Runtime
-  Model --> SourceGen
-  Model --> Analyzers
+The important rule is that compatibility and deferred tooling must not pull extra runtime or JavaScript dependencies into the core path.
 
-  Runtime --> Configuration
-  Configuration --> Hosting
+## Testing And CI Stance
 
-  Authoring --> Cli
-  Compat --> Cli
-  Runtime --> Cli
-```
+- `tests/ConfigContract.Tests/` is the current proof set for registry behavior and Varlock import behavior.
+- `examples/` stays small and product-owned: direct validation, basic hosting, and bounded Varlock ingestion.
+- The governing CI path is one fast required lane built around `dotnet restore`, `dotnet build`, and `dotnet test` on `ConfigContract.sln`.
+- Broader compatibility sweeps, performance work, or large example matrices are deferred until they are approved and affordable.
 
-Read this as dependency direction, not control flow:
+## Expansion Rules
 
-- the model is the common center
-- runtime depends on the model
-- higher-level integration packages depend on runtime
-- compatibility depends inward on the model, never outward from the core runtime
-
-## Testing Strategy
-
-The repository should test the product in layers.
-
-### Unit tests
-
-Each package owns fast tests for its internal behavior and diagnostics.
-
-### Integration tests
-
-Cross-package tests verify runtime loading, configuration binding, hosting integration, and generated output.
-
-### Compatibility tests
-
-Varlock ingestion must have its own fixtures and expectations. Compatibility claims should be explicit, versioned, and allowed to fail independently of first-party authoring work when the support matrix changes.
-
-### Example validation
-
-Examples are part of the product surface and should be built and exercised in CI. They are not marketing-only folders.
-
-## Release and Versioning Stance
-
-The repository should release as one coherent .NET product line until package-level independence becomes operationally necessary.
-
-That implies:
-
-- shared versioning by default
-- coordinated docs and examples
-- coordinated analyzer, generator, and runtime changes
-- a clear support matrix for compatibility adapters
-
-Independent versioning should be introduced only when it reduces real operational cost without obscuring the product surface.
-
-## Hard Boundary Against Bridge-Wrapper Drift
-
-This repository must resist drifting into a bridge-wrapper architecture.
-
-Signs of drift include:
-
-- core packages shelling out to external JavaScript runtimes
-- public APIs mirroring another ecosystem instead of .NET idioms
-- compatibility packages dictating model or runtime design
-- docs that explain the product primarily through another tool's terminology
-
-If those signs appear, the fix is to move the behavior back behind the compatibility boundary or redesign the affected surface around ConfigContract's own model.
+- New package boundaries or public APIs should appear only when a proved behavior needs them.
+- Placeholder projects do not create a support promise.
+- If the repo expands into richer configuration or options integration, analyzers, source generation, or CLI tooling, that expansion should update the MVP docs and roadmap in the same change.
+- Varlock compatibility may expand only as an explicit support matrix with unsupported cases kept visible.
 
 ## What This Repository Should Feel Like
 
-A contributor or adopter should be able to look at this repository and conclude the following:
+A contributor or adopter should be able to conclude the following:
 
-- ConfigContract is a real .NET product line
-- the core runtime and tooling are native to .NET
-- compatibility with Varlock exists, but it is contained and deliberate
-- package boundaries are chosen to support long-term product clarity, not short-term bridging convenience
-
-That is the standard this architecture is meant to enforce.
+- ConfigContract is a small, dependency-light .NET library repo first.
+- The core model and validation path are the center.
+- Basic hosting integration and bounded Varlock ingestion are proven seams, not marketing placeholders.
+- Broader tooling and package growth remain conditional, not assumed.
