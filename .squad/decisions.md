@@ -17,6 +17,11 @@
 **What:** Treat hosting as a basic `AddConfigContract()` and `ContractRegistry` DI seam in the MVP and require an automated proof on that path before describing hosting as proof-backed.
 **Why:** This keeps the docs aligned to the current test surface and closes the last mismatch without widening the hosting story beyond what the repository currently implements and tests.
 
+### 2026-03-30: `pr-fast.yml` is the single MVP CI lane
+**By:** Parker
+**What:** Keep `.github/workflows/pr-fast.yml` as the only MVP CI workflow. It runs on `pull_request`, `push` to `main`, and `workflow_dispatch` with minimal permissions, a simple NuGet cache, and the solution-level `dotnet restore ConfigContract.sln`, `dotnet build ConfigContract.sln -c Release --no-restore`, and `dotnet test ConfigContract.sln -c Release --no-build -v minimal` sequence.
+**Why:** This makes the required gate explicit and fast, keeps verification aligned to the approved MVP scope, and avoids broader matrices or example sweeps until the repo needs them.
+
 ## Governance
 
 - All meaningful changes require team consensus
