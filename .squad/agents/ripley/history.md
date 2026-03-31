@@ -18,3 +18,4 @@
 - Initial configured team setup completed on 2026-03-30T15:48:06Z.
 - 2026-03-30: MVP scoping stays narrow around .NET-first pre-binding validation, and the proposal needs approval before any product-doc drafting starts.
 - 2026-03-30: Reject doc wording that outruns automated proof even when scope is otherwise approved; require either narrower language or a focused proof.
+- 📌 Team update (2026-03-31T01:44:43Z): Final MVP approval depends on the repo matching the narrow PRD across code, docs, tests, examples, and `pr-fast.yml`; hosted branch-protection enforcement stays an external operational follow-up. — decided by Ripley

@@ -18,3 +18,4 @@
 - Initial configured team setup completed on 2026-03-30T15:48:06Z.
 - 2026-03-30: PRD framing should emphasize narrow .NET-first value, developer experience, and CI runtime, and stop short of product-doc writing before proposal approval.
 - 2026-03-30: Once `docs/mvp-product-requirements.md` is approved, treat it as the near-term source of truth and keep README and roadmap wording inside the proved MVP and CI and DX constraints.
+- 📌 Team update (2026-03-31T01:44:43Z): Public docs and examples must stay inside the approved MVP, describe only the proved `AddConfigContract` and `ContractRegistry` seam, and link to `docs/varlock-supported-subset.md` for the bounded adapter claim. — decided by Brett, Dallas, Ripley, Parker, Lambert
