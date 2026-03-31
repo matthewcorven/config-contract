@@ -6,7 +6,7 @@
 
 ## Decision Summary
 
-ConfigContract should continue as a dedicated .NET-first repository, but the approved near-term claim is intentionally narrow: prove a small pre-binding configuration contract library for .NET with explicit diagnostics, basic DI and hosting integration, and a bounded Varlock migration lane.
+ConfigContract should continue as a dedicated .NET-first repository, but the approved near-term claim is intentionally narrow: prove a small pre-binding configuration contract library for .NET with explicit diagnostics, the basic `AddConfigContract()`/`ContractRegistry` DI seam, and a bounded Varlock migration lane.
 
 This proposal does not approve a broad first release spanning runtime layers, configuration or options integration, source generation, analyzers, CLI tooling, or a large package map. Those are deferred possibilities. They require separate proof, explicit re-scoping, and a new approval decision before they become part of the product promise.
 
@@ -30,7 +30,7 @@ The approved near-term direction is:
 
 - one .NET-first contract model owned by ConfigContract
 - validation and registry behavior that runs before binding and returns explicit diagnostics
-- basic DI and hosting integration for the default `Microsoft.Extensions.*` path
+- the basic `AddConfigContract()`/`ContractRegistry` DI seam for the default `Microsoft.Extensions.*` path
 - bounded Varlock-spec ingestion for a documented subset, with explicit unsupported-case diagnostics
 - small runnable examples and automated proofs for only that surface
 - one fast required pull request lane focused on the MVP surface
@@ -78,9 +78,9 @@ Committed MVP surface:
 
 - `ConfigContract.Abstractions` for contract and diagnostic primitives
 - `ConfigContract` for registry and validation behavior
-- `ConfigContract.Hosting` for the basic DI and hosting seam
+- `ConfigContract.Hosting` for the basic `AddConfigContract()`/`ContractRegistry` DI seam
 - `ConfigContract.VarlockSpec` for bounded Varlock ingestion
-- one shared test project and a small example set that prove those behaviors
+- one shared test project that proves those behaviors and a small example set aligned to the same narrow surface
 
 Reserved or deferred seams:
 
@@ -93,7 +93,7 @@ Placeholder or reserved projects must not be treated as approval for a broader f
 
 The following areas are explicitly deferred until the MVP is proven and a new direction decision approves the expansion:
 
-- richer configuration or options integration beyond the current basic hosting seam
+- richer configuration or options integration beyond the current basic `AddConfigContract()`/`ContractRegistry` DI seam
 - first-party authoring formats or parsers beyond today's direct model construction
 - source generation
 - analyzers

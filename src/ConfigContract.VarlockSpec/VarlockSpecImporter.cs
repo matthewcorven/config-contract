@@ -28,15 +28,19 @@ public static partial class VarlockSpecImporter
       var rawLine = lines[index];
       var trimmedLine = rawLine.Trim();
       if (string.IsNullOrWhiteSpace(trimmedLine)
-        || trimmedLine is "/**" or "*/"
-        || trimmedLine.StartsWith('*'))
+        || trimmedLine is "/**" or "*/")
       {
         continue;
       }
 
-      if (trimmedLine.StartsWith('#'))
+      if (TryGetCommentDecorator(trimmedLine, out var rootDecorator))
       {
-        ProcessCommentLine(trimmedLine, filePath, index + 1, diagnostics);
+        ProcessCommentLine(rootDecorator, filePath, index + 1, diagnostics);
+        continue;
+      }
+
+      if (trimmedLine.StartsWith('#') || trimmedLine.StartsWith('*'))
+      {
         continue;
       }
 
@@ -74,6 +78,18 @@ public static partial class VarlockSpecImporter
         continue;
       }
 
+      var unsupportedRightHandSide = SupportedTokenRegex().Replace(rhs, string.Empty).Trim();
+      if (!string.IsNullOrWhiteSpace(unsupportedRightHandSide))
+      {
+        diagnostics.Add(CreateDiagnostic(
+          "VSP0005",
+          $"Config item '{key}' contains unsupported right-hand-side content '{unsupportedRightHandSide}'.",
+          filePath,
+          index + 1));
+        continue;
+      }
+
+      var fieldDiagnostics = new List<ContractDiagnostic>();
       ContractValueKind? kind = null;
       var required = false;
       var sensitive = false;
@@ -81,17 +97,24 @@ public static partial class VarlockSpecImporter
 
       foreach (var token in tokens)
       {
+        if (TryMapTypeDecorator(token, out var mappedKind))
+        {
+          if (kind is not null)
+          {
+            fieldDiagnostics.Add(CreateDiagnostic(
+              "VSP0006",
+              $"Config item '{key}' declares multiple supported type decorators. Only one type decorator is supported per field.",
+              filePath,
+              index + 1));
+            continue;
+          }
+
+          kind = mappedKind;
+          continue;
+        }
+
         switch (token)
         {
-          case "@string":
-            kind = ContractValueKind.String;
-            break;
-          case "@integer":
-            kind = ContractValueKind.Integer;
-            break;
-          case "@boolean":
-            kind = ContractValueKind.Boolean;
-            break;
           case "@required":
             required = true;
             break;
@@ -101,11 +124,21 @@ public static partial class VarlockSpecImporter
           default:
             if (token.StartsWith("@default(", StringComparison.Ordinal))
             {
+              if (defaultValue is not null)
+              {
+                fieldDiagnostics.Add(CreateDiagnostic(
+                  "VSP0007",
+                  $"Config item '{key}' declares multiple @default decorators. Only one default is supported per field.",
+                  filePath,
+                  index + 1));
+                continue;
+              }
+
               defaultValue = token[9..^1].Trim().Trim('"');
             }
             else
             {
-              diagnostics.Add(CreateDiagnostic(
+              fieldDiagnostics.Add(CreateDiagnostic(
                 "VSP1001",
                 $"Field decorator '{token}' is not supported in the current Varlock compatibility lane.",
                 filePath,
@@ -114,6 +147,12 @@ public static partial class VarlockSpecImporter
 
             break;
         }
+      }
+
+      if (fieldDiagnostics.Count > 0)
+      {
+        diagnostics.AddRange(fieldDiagnostics);
+        continue;
       }
 
       if (kind is null)
@@ -133,19 +172,99 @@ public static partial class VarlockSpecImporter
   }
 
   private static void ProcessCommentLine(
-    string trimmedLine,
+    string decorator,
     string? filePath,
     int lineNumber,
     List<ContractDiagnostic> diagnostics)
   {
-    if (trimmedLine.StartsWith("# @plugin", StringComparison.Ordinal))
+    var decoratorName = GetDecoratorName(decorator);
+
+    if (string.Equals(decorator, "@env-spec", StringComparison.Ordinal))
+    {
+      return;
+    }
+
+    if (string.Equals(decoratorName, "@plugin", StringComparison.Ordinal))
     {
       diagnostics.Add(CreateDiagnostic(
         "VSP2001",
         "Root decorator @plugin is outside the first-wave Varlock compatibility surface for ConfigContract.",
         filePath,
         lineNumber));
+
+      return;
     }
+
+    diagnostics.Add(CreateDiagnostic(
+      "VSP2002",
+      $"Root decorator '{decoratorName}' is not supported in the current Varlock compatibility lane.",
+      filePath,
+      lineNumber));
+  }
+
+  private static bool TryGetCommentDecorator(string trimmedLine, out string decorator)
+  {
+    decorator = string.Empty;
+
+    if (trimmedLine.StartsWith('#'))
+    {
+      var candidate = trimmedLine[1..].Trim();
+      if (candidate.StartsWith('@'))
+      {
+        decorator = candidate;
+        return true;
+      }
+
+      return false;
+    }
+
+    if (!trimmedLine.StartsWith('*'))
+    {
+      return false;
+    }
+
+    var blockCandidate = trimmedLine[1..].Trim();
+    if (!blockCandidate.StartsWith('@'))
+    {
+      return false;
+    }
+
+    decorator = blockCandidate;
+    return true;
+  }
+
+  private static bool TryMapTypeDecorator(string token, out ContractValueKind kind)
+  {
+    switch (token)
+    {
+      case "@string":
+        kind = ContractValueKind.String;
+        return true;
+      case "@integer":
+        kind = ContractValueKind.Integer;
+        return true;
+      case "@boolean":
+        kind = ContractValueKind.Boolean;
+        return true;
+      default:
+        kind = default;
+        return false;
+    }
+  }
+
+  private static string GetDecoratorName(string decorator)
+  {
+    var endIndex = decorator.Length;
+    foreach (var delimiter in new[] { '(', ' ', '\t' })
+    {
+      var delimiterIndex = decorator.IndexOf(delimiter);
+      if (delimiterIndex >= 0 && delimiterIndex < endIndex)
+      {
+        endIndex = delimiterIndex;
+      }
+    }
+
+    return endIndex == decorator.Length ? decorator : decorator[..endIndex];
   }
 
   private static ContractDiagnostic CreateDiagnostic(

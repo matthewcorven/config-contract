@@ -10,9 +10,9 @@ The repo is already past pure scaffold status. Today it includes:
 
 - a core contract model and validation path
 - registry aggregation for contract validation results
-- basic hosting integration through `ConfigContract.Hosting`
+- the basic `AddConfigContract()`/`ContractRegistry` DI seam through `ConfigContract.Hosting`
 - a bounded Varlock-spec importer with explicit diagnostics for unsupported or malformed input
-- automated tests and small runnable examples for the direct, hosting, and migration lanes
+- automated tests and small runnable examples for the direct validation, DI seam, and migration lanes
 
 That means the roadmap is about tightening and proving the MVP, not inventing a broader first release.
 
@@ -31,7 +31,7 @@ The MVP needs one fast required pull request lane.
 That lane should:
 
 - cover restore, build, and fast deterministic proofs for the MVP surface
-- protect the direct validation path, the default hosting path, and the bounded Varlock migration lane
+- protect the direct validation path, the `AddConfigContract()`/`ContractRegistry` DI seam, and the bounded Varlock migration lane
 - stay small enough that routine pull requests are not blocked by broad fixture matrices or slow environment setup
 
 Heavier lanes are intentionally deferred from required pull request gating during MVP. Larger compatibility sweeps, performance checks, broader example matrices, and similar work can exist as non-required or post-MVP lanes once the narrow surface is stable.
@@ -41,7 +41,7 @@ Heavier lanes are intentionally deferred from required pull request gating durin
 The examples in this repository should continue to prove only the product surface the repo owns today:
 
 - a minimal direct validation example
-- a minimal hosting example
+- a minimal `AddConfigContract()`/`ContractRegistry` DI example
 - a bounded Varlock migration example
 
 Broader host, reload, cloud, and security examples stay out of the MVP until the corresponding product surface exists and has proof in this repository. The carry-over policy remains in [docs/example-migration-plan.md](example-migration-plan.md).
@@ -54,8 +54,8 @@ Deliverables:
 
 - stable contract-model and diagnostic behavior for the default .NET path
 - registry validation behavior with explicit, testable diagnostics
-- basic hosting integration that proves ConfigContract fits ordinary .NET registration and consumption flows
-- a documented bounded Varlock subset with explicit unsupported-case reporting
+- the basic `AddConfigContract()`/`ContractRegistry` DI seam that proves ConfigContract fits ordinary .NET registration and consumption flows
+- a documented bounded Varlock subset in [varlock-supported-subset.md](varlock-supported-subset.md) with explicit unsupported-case reporting
 - README, roadmap, and example positioning aligned to the same narrow promise
 
 Exit criteria:

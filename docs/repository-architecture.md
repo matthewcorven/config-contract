@@ -1,6 +1,6 @@
 # ConfigContract Repository Architecture
 
-This repository currently supports a narrow .NET-first MVP: pre-binding configuration contract validation, registry behavior, basic DI and hosting registration, and bounded Varlock-spec ingestion. It should not be read as the architecture of a broad first-release product line.
+This repository currently supports a narrow .NET-first MVP: pre-binding configuration contract validation, registry behavior, the basic `AddConfigContract()`/`ContractRegistry` DI seam, and bounded Varlock-spec ingestion. It should not be read as the architecture of a broad first-release product line.
 
 ## Governing Constraints
 
@@ -74,7 +74,7 @@ Today this is the main pre-binding validation path the MVP proves.
 
 ### `ConfigContract.Hosting`
 
-Adds the basic DI and hosting seam.
+Adds the basic `AddConfigContract()`/`ContractRegistry` DI seam.
 
 Today that means registering `ContractRegistry` through the normal `IServiceCollection` path. It is not yet a broader configuration provider or options-integration layer.
 
@@ -111,7 +111,7 @@ The important rule is that compatibility and deferred tooling must not pull extr
 ## Testing And CI Stance
 
 - `tests/ConfigContract.Tests/` is the current proof set for registry behavior and Varlock import behavior.
-- `examples/` stays small and product-owned: direct validation, basic hosting, and bounded Varlock ingestion.
+- `examples/` stays small and product-owned: direct validation, the basic `AddConfigContract()`/`ContractRegistry` DI seam, and bounded Varlock ingestion.
 - The governing CI path is one fast required lane built around `dotnet restore`, `dotnet build`, and `dotnet test` on `ConfigContract.sln`.
 - Broader compatibility sweeps, performance work, or large example matrices are deferred until they are approved and affordable.
 
@@ -128,5 +128,5 @@ A contributor or adopter should be able to conclude the following:
 
 - ConfigContract is a small, dependency-light .NET library repo first.
 - The core model and validation path are the center.
-- Basic hosting integration and bounded Varlock ingestion are proven seams, not marketing placeholders.
+- The basic `AddConfigContract()`/`ContractRegistry` DI seam and bounded Varlock ingestion are proven seams, not marketing placeholders.
 - Broader tooling and package growth remain conditional, not assumed.

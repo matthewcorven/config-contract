@@ -1,13 +1,13 @@
 # ConfigContract MVP Product Requirements
 
-**Status:** Drafted from approved direction  
+**Status:** Approved MVP source of truth
 **Updated:** 2026-03-30
 
 This document defines the approved near-term MVP for ConfigContract. It is intentionally narrower than the broader product direction in [Proposal 0001](proposals/0001-config-contract-product-direction.md) and the long-term architecture in [repository-architecture.md](repository-architecture.md). The staged delivery sequence lives in [roadmap.md](roadmap.md).
 
 ## Product Summary
 
-ConfigContract MVP is a .NET-first configuration contract library surface for declaring configuration expectations before binding, validating those expectations, preserving actionable diagnostics and sensitivity metadata, and fitting into ordinary .NET DI and hosting flows.
+ConfigContract MVP is a .NET-first configuration contract library surface for declaring configuration expectations before binding, validating those expectations, preserving actionable diagnostics and sensitivity metadata, and fitting into ordinary .NET DI flows through the basic `AddConfigContract()`/`ContractRegistry` seam.
 
 ## Problem Statement
 
@@ -29,7 +29,7 @@ By the end of the MVP, ConfigContract can publicly promise only the following:
 
 - a .NET-first contract model for required or optional values, defaults, value kinds, sensitivity metadata, and diagnostics
 - a validation and registry path that runs before binding and returns explicit, testable diagnostics
-- basic hosting integration for the default `Microsoft.Extensions.*` path
+- the basic `AddConfigContract()`/`ContractRegistry` DI seam for the default `Microsoft.Extensions.*` path
 - a bounded Varlock-spec import lane for a documented subset, with explicit unsupported-case diagnostics
 - small runnable examples and automated proofs for the supported surface
 - one fast required pull request lane focused on this MVP surface, with heavier lanes deferred
@@ -39,8 +39,8 @@ By the end of the MVP, ConfigContract can publicly promise only the following:
 - the core contract model and diagnostics surface already owned by this repository
 - deterministic validation behavior and proof-backed diagnostics
 - the default .NET developer path through `dotnet restore`, `dotnet build`, and `dotnet test`
-- basic hosting or DI integration that proves the product fits normal .NET application setup
-- a bounded Varlock migration lane with written support limits
+- the basic `AddConfigContract()`/`ContractRegistry` DI seam that proves the product fits normal .NET application setup
+- a bounded Varlock migration lane with written support limits in [varlock-supported-subset.md](varlock-supported-subset.md)
 - concise docs and examples that describe only the proven MVP surface
 
 ## Out Of Scope
@@ -58,7 +58,7 @@ By the end of the MVP, ConfigContract can publicly promise only the following:
 - The default developer workflow must stay .NET-only and must not require Node.js, Bun, npm, or another JavaScript runtime.
 - The README, roadmap, and examples must point to the same narrow MVP story instead of mixing near-term claims with long-term product direction.
 - Diagnostics should be explicit enough to assert in tests and readable enough to act on in CI output.
-- Examples should stay small, product-owned, and directly mapped to the MVP surface: direct validation, hosting integration, and the bounded Varlock migration lane.
+- Examples should stay small, product-owned, and directly mapped to the MVP surface: direct validation, the basic `AddConfigContract()`/`ContractRegistry` DI seam, and the bounded Varlock migration lane.
 - Unsupported behavior must be called out directly instead of implied through roadmap or example sprawl.
 
 ## CI And Runtime Requirements
@@ -68,7 +68,7 @@ The MVP must optimize for fast routine pull requests and predictable runtime beh
 Required pull request lane:
 
 - One fast required lane should cover restore, build, and fast deterministic proofs for the MVP surface.
-- That required lane should protect the direct validation path, the default hosting path, and the bounded Varlock migration lane.
+- That required lane should protect the direct validation path, the `AddConfigContract()`/`ContractRegistry` DI seam, and the bounded Varlock migration lane.
 - The required lane should stay small enough to be routine protection, not a catch-all validation program.
 
 Deferred heavier lanes:
@@ -95,4 +95,4 @@ The MVP is ready to treat as the repo's near-term public promise when:
 
 ## Approval-Sensitive Questions
 
-No blocking approval questions remain for this draft. Future scope expansion should be treated as a new approval decision rather than an edit to this MVP promise.
+No blocking approval questions remain. Future scope expansion should be treated as a new approval decision rather than an edit to this MVP promise.

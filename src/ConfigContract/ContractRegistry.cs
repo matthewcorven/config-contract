@@ -26,4 +26,28 @@ public sealed class ContractRegistry
 
     return new ContractValidationResult(diagnostics);
   }
+
+  public ContractValidationResult Validate(IReadOnlyDictionary<string, string?> values)
+  {
+    ArgumentNullException.ThrowIfNull(values);
+
+    var normalizedValues = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+    foreach (var pair in values)
+    {
+      if (string.IsNullOrWhiteSpace(pair.Key))
+      {
+        continue;
+      }
+
+      normalizedValues[pair.Key] = pair.Value;
+    }
+
+    var diagnostics = new List<ContractDiagnostic>();
+    foreach (var descriptor in _contracts)
+    {
+      diagnostics.AddRange(ContractValidator.Validate(descriptor, normalizedValues).Diagnostics);
+    }
+
+    return new ContractValidationResult(diagnostics);
+  }
 }
